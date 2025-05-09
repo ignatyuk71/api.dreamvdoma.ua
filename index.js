@@ -33,71 +33,6 @@ app.post('/test-post', (req, res) => {
 });
 
 
-
-// 🎯 Основний маршрут — обробка події PageView та надсилання до Facebook API
-app.post('/api/pageView11111', async (req, res) => {
-    //console.log("📥 Incoming POST request"); // Лог запиту
-  
-    const data = req.body; // Тіло запиту, яке ми отримали з клієнта
-    const event = req.body?.data?.[0] || {};
-    const user = event.user_data || {};
-  
-    const ip =
-      req.headers['x-forwarded-for']?.split(',')[0] ||
-      req.socket?.remoteAddress ||
-      null;
-  
-    const payload = {
-      data: [
-        {
-          event_name: event.event_name || "PageView",
-          event_time: event.event_time || Math.floor(Date.now() / 1000),
-          action_source: event.action_source || "website",
-          event_id: event.event_id || "event_" + Date.now(),
-          user_data: {
-            client_user_agent: user.client_user_agent || req.headers['user-agent'],
-            fbp: user.fbp,
-            fbc: user.fbc,
-            external_id: user.external_id || "anonymous_user",
-            client_ip_address: ip
-          }
-        }
-      ],
-      test_event_code: req.body?.test_event_code || "TEST10696"
-      
-    };
-  
-   // ✅ Виводимо у консоль перед відправкою
-     console.log('📦 eventData to send:', JSON.stringify(payload, null, 2));
-  
-    /*try {
-      // Відправляємо дані до Facebook через Conversions API
-      const fbRes = await axios.post(
-        `https://graph.facebook.com/v18.0/${PIXEL_ID}/events?access_token=${ACCESS_TOKEN}`,
-        payload,
-        { headers: { 'Content-Type': 'application/json' } }
-      );
-  
-      // Логуємо відповідь від Facebook
-      console.log("✅ Facebook response (pageView):->");
-  
-      // Відповідь клієнту
-      res.json({ success: true, fb: fbRes.data });
-  
-    } catch (err) {
-      // Якщо є помилка — лог і повідомлення клієнту
-      console.error("❌ Facebook error:", err.response?.data || err.message);
-      res.status(500).json({
-        success: false,
-        message: "Failed to send event to Facebook",
-        error: err.response?.data || err.message
-      });
-    }*/
-  });
-
-
-
-
   // 🎯 Основний маршрут — обробка події PageView та надсилання до Facebook API
   app.post('/api/pageView', async (req, res) => {
     const data = req.body;
@@ -116,7 +51,7 @@ app.post('/api/pageView11111', async (req, res) => {
           event_time: event.event_time || Math.floor(Date.now() / 1000),
           action_source: event.action_source || "website",
           event_id: event.event_id || "event_" + Date.now(),
-          event_source_url: event.event_source_url || req.headers.referer || "",
+          event_source_url: (event.event_source_url || req.headers.referer || "").replace(/;$/, ""),
           user_data: {
             client_user_agent: user.client_user_agent || req.headers['user-agent'],
             fbp: user.fbp,
