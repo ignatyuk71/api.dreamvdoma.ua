@@ -35,7 +35,7 @@ app.post('/test-post', (req, res) => {
 
 
 // 🎯 Основний маршрут — обробка події PageView та надсилання до Facebook API
-app.post('/api/pageView', async (req, res) => {
+app.post('/api/pageView11111', async (req, res) => {
     //console.log("📥 Incoming POST request"); // Лог запиту
   
     const data = req.body; // Тіло запиту, яке ми отримали з клієнта
@@ -94,6 +94,51 @@ app.post('/api/pageView', async (req, res) => {
       });
     }*/
   });
+
+
+
+
+  // 🎯 Основний маршрут — обробка події PageView та надсилання до Facebook API
+app.post('/api/pageView', (req, res) => {
+    const data = req.body; // Тіло запиту
+    const event = req.body?.data?.[0] || {};
+    const user = event.user_data || {};
+  
+    const ip =
+      req.headers['x-forwarded-for']?.split(',')[0] ||
+      req.socket?.remoteAddress ||
+      null;
+  
+    const payload = {
+      data: [
+        {
+          event_name: event.event_name || "PageView",
+          event_time: event.event_time || Math.floor(Date.now() / 1000),
+          action_source: event.action_source || "website",
+          event_id: event.event_id || "event_" + Date.now(),
+          user_data: {
+            client_user_agent: user.client_user_agent || req.headers['user-agent'],
+            fbp: user.fbp,
+            fbc: user.fbc,
+            external_id: user.external_id || "anonymous_user",
+            client_ip_address: ip
+          }
+        }
+      ],
+      test_event_code: req.body?.test_event_code || "TEST10696"
+    };
+  
+    // Виводимо в консоль
+    console.log('📦 PageView payload:', JSON.stringify(payload, null, 2));
+  
+    // Тимчасова відповідь клієнту
+    res.json({
+      success: true,
+      message: 'PageView payload отримано успішно',
+      payload
+    });
+  });
+  
 
 
 // Запуск сервера
