@@ -70,7 +70,7 @@ app.post('/api/pageView', async (req, res) => {
    // ✅ Виводимо у консоль перед відправкою
      console.log('📦 eventData to send:', JSON.stringify(payload, null, 2));
   
-    try {
+    /*try {
       // Відправляємо дані до Facebook через Conversions API
       const fbRes = await axios.post(
         `https://graph.facebook.com/v18.0/${PIXEL_ID}/events?access_token=${ACCESS_TOKEN}`,
@@ -92,7 +92,7 @@ app.post('/api/pageView', async (req, res) => {
         message: "Failed to send event to Facebook",
         error: err.response?.data || err.message
       });
-    }
+    }*/
   });
 
 
