@@ -32,77 +32,66 @@ app.post('/test-post', (req, res) => {
   });
 });
 
+
 // 🎯 Основний маршрут — надсилання події PageView у Facebook
 app.post('/api/pageView', async (req, res) => {
-  const data = req.body;
-  const event = data?.data?.[0] || {};
-  const user = event.user_data || {};
-
-  // Визначаємо IP користувача
-  const ip =
-    req.headers['x-forwarded-for']?.split(',')[0] ||
-    req.socket?.remoteAddress ||
-    null;
-    
-const cleanUrl = (url) => {
-        try {
-          const u = new URL(url);
-          u.searchParams.delete('fbclid');
-          return u.toString();
-        } catch (e) {
-          return url;
+    const data = req.body;
+    const event = data?.data?.[0] || {};
+    const user = event.user_data || {};
+  
+    // Визначаємо IP користувача
+    const ip =
+      req.headers['x-forwarded-for']?.split(',')[0] ||
+      req.socket?.remoteAddress ||
+      null;
+  
+    // Формуємо payload згідно з вимогами Facebook CAPI
+    const payload = {
+      data: [
+        {
+          event_name: event.event_name || "PageView",
+          event_time: event.event_time || Math.floor(Date.now() / 1000),
+          action_source: event.action_source || "website",
+          event_id: event.event_id || "event_" + Date.now(),
+          event_source_url: event.event_source_url || req.headers.referer || "",
+          user_data: {
+            client_user_agent: user.client_user_agent || req.headers['user-agent'],
+            fbp: user.fbp,
+            fbc: user.fbc,
+            external_id: user.external_id || "anonymous_user",
+            client_ip_address: ip
+          }
         }
-      };
-  // Формуємо payload згідно з вимогами Facebook CAPI
-  const payload = {
-    data: [
-      {
-        event_name: event.event_name || "PageView",
-        event_time: event.event_time || Math.floor(Date.now() / 1000),
-        action_source: event.action_source || "website",
-        event_id: event.event_id || "event_" + Date.now(),
-        event_source_url: cleanUrl(event.event_source_url || req.headers.referer || ""),
-        user_data: {
-          client_user_agent: user.client_user_agent || req.headers['user-agent'],
-          fbp: user.fbp,
-          fbc: user.fbc,
-          external_id: user.external_id || "anonymous_user",
-          client_ip_address: ip
-        }
-      }
-    ]
-  };
-
-  // Логуємо, що саме відправляємо на Facebook
-  console.log('📦 PageView payload для Facebook:\n', JSON.stringify(payload, null, 2));
-
-  try {
-    // Відправляємо запит до Facebook Conversions API
-    const fbRes = await axios.post(
-      `https://graph.facebook.com/v18.0/${PIXEL_ID}/events?access_token=${ACCESS_TOKEN}`,
-      payload,
-      { headers: { 'Content-Type': 'application/json' } }
-    );
-
-    // Виводимо відповідь від Facebook
-    console.log('✅ Facebook відповів PageView->:');
-
-    // Надсилаємо відповідь клієнту
-    res.json({
-      success: true,
-      message: 'PageView успішно надіслано до Facebook',
-      fb: fbRes.data
-    });
-  } catch (err) {
-    // Якщо сталася помилка — виводимо та надсилаємо клієнту
-    console.error('❌ Facebook error:', err.response?.data || err.message);
-    res.status(500).json({
-      success: false,
-      message: 'Помилка надсилання PageView до Facebook',
-      error: err.response?.data || err.message
-    });
-  }
-});
+      ]
+    };
+  
+    // Логування payload
+    console.log('📦 PageView payload для Facebook:\n', JSON.stringify(payload, null, 2));
+  
+    try {
+      const fbRes = await axios.post(
+        `https://graph.facebook.com/v18.0/${PIXEL_ID}/events?access_token=${ACCESS_TOKEN}`,
+        payload,
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+  
+      console.log('✅ Facebook відповів PageView ->', fbRes.data);
+  
+      res.json({
+        success: true,
+        message: 'PageView успішно надіслано до Facebook',
+        fb: fbRes.data
+      });
+    } catch (err) {
+      console.error('❌ Facebook error:', err.response?.data || err.message);
+      res.status(500).json({
+        success: false,
+        message: 'Помилка надсилання PageView до Facebook',
+        error: err.response?.data || err.message
+      });
+    }
+  });
+  
 
 // 🚀 Запуск сервера
 app.listen(port, () => {
