@@ -43,7 +43,15 @@ app.post('/api/pageView', async (req, res) => {
     req.headers['x-forwarded-for']?.split(',')[0] ||
     req.socket?.remoteAddress ||
     null;
-
+const cleanUrl = (url) => {
+        try {
+          const u = new URL(url);
+          u.searchParams.delete('fbclid');
+          return u.toString();
+        } catch (e) {
+          return url;
+        }
+      };
   // Формуємо payload згідно з вимогами Facebook CAPI
   const payload = {
     data: [
@@ -52,7 +60,7 @@ app.post('/api/pageView', async (req, res) => {
         event_time: event.event_time || Math.floor(Date.now() / 1000),
         action_source: event.action_source || "website",
         event_id: event.event_id || "event_" + Date.now(),
-        event_source_url: (event.event_source_url || req.headers.referer || "").replace(/;$/, ""),
+        event_source_url: cleanUrl(event.event_source_url || req.headers.referer || ""),
         user_data: {
           client_user_agent: user.client_user_agent || req.headers['user-agent'],
           fbp: user.fbp,
