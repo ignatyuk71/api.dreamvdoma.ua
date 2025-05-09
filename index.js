@@ -43,6 +43,7 @@ app.post('/api/pageView', async (req, res) => {
     req.headers['x-forwarded-for']?.split(',')[0] ||
     req.socket?.remoteAddress ||
     null;
+    
 const cleanUrl = (url) => {
         try {
           const u = new URL(url);
