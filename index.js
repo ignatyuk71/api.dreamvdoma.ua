@@ -99,9 +99,9 @@ app.post('/api/pageView11111', async (req, res) => {
 
 
   // 🎯 Основний маршрут — обробка події PageView та надсилання до Facebook API
-app.post('/api/pageView', (req, res) => {
-    const data = req.body; // Тіло запиту
-    const event = req.body?.data?.[0] || {};
+  app.post('/api/pageView', async (req, res) => {
+    const data = req.body;
+    const event = data?.data?.[0] || {};
     const user = event.user_data || {};
   
     const ip =
@@ -116,6 +116,7 @@ app.post('/api/pageView', (req, res) => {
           event_time: event.event_time || Math.floor(Date.now() / 1000),
           action_source: event.action_source || "website",
           event_id: event.event_id || "event_" + Date.now(),
+          event_source_url: event.event_source_url || req.headers.referer || "",
           user_data: {
             client_user_agent: user.client_user_agent || req.headers['user-agent'],
             fbp: user.fbp,
@@ -125,19 +126,37 @@ app.post('/api/pageView', (req, res) => {
           }
         }
       ],
-      test_event_code: req.body?.test_event_code || "TEST10696"
+      test_event_code: data?.test_event_code || "TEST10696"
     };
   
-    // Виводимо в консоль
-    console.log('📦 PageView payload:', JSON.stringify(payload, null, 2));
+    // 🔍 Вивід у консоль
+    console.log('📦 PageView payload для Facebook:\n', JSON.stringify(payload, null, 2));
   
-    // Тимчасова відповідь клієнту
-    res.json({
-      success: true,
-      message: 'PageView payload отримано успішно',
-      payload
-    });
+    try {
+      const fbRes = await axios.post(
+        `https://graph.facebook.com/v18.0/${PIXEL_ID}/events?access_token=${ACCESS_TOKEN}`,
+        payload,
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+  
+      console.log('✅ Facebook відповів:', fbRes.data);
+  
+      res.json({
+        success: true,
+        message: 'PageView успішно надіслано до Facebook',
+        fb: fbRes.data
+      });
+  
+    } catch (err) {
+      console.error('❌ Facebook error:', err.response?.data || err.message);
+      res.status(500).json({
+        success: false,
+        message: 'Помилка надсилання PageView до Facebook',
+        error: err.response?.data || err.message
+      });
+    }
   });
+  
   
 
 
