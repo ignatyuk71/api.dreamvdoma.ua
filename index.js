@@ -75,7 +75,7 @@ app.post('/api/pageView', async (req, res) => {
         { headers: { 'Content-Type': 'application/json' } }
       );
   
-      console.log('✅ Facebook відповів PageView ->', fbRes.data);
+      console.log('✅ Facebook відповів PageView ->');
   
       res.json({
         success: true,
