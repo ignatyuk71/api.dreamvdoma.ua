@@ -61,8 +61,7 @@ app.post('/api/pageView', async (req, res) => {
           client_ip_address: ip
         }
       }
-    ],
-    test_event_code: data?.test_event_code || "TEST10696"
+    ]
   };
 
   // Логуємо, що саме відправляємо на Facebook
@@ -77,7 +76,7 @@ app.post('/api/pageView', async (req, res) => {
     );
 
     // Виводимо відповідь від Facebook
-    console.log('✅ Facebook відповів:', fbRes.data);
+    console.log('✅ Facebook відповів PageView->:');
 
     // Надсилаємо відповідь клієнту
     res.json({
