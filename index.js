@@ -34,58 +34,49 @@ app.post('/test-post', (req, res) => {
 
 
 // 🎯 Основний маршрут — надсилання події PageView у Facebook
-// 🎯 Основний маршрут — надсилання події PageView у Facebook
 app.post('/api/pageView', async (req, res) => {
     const data = req.body;
     const event = data?.data?.[0] || {};
     const user = event.user_data || {};
-  
+
     // Визначаємо IP користувача
     const ip =
       req.headers['x-forwarded-for']?.split(',')[0] ||
       req.socket?.remoteAddress ||
       null;
-  
-    // Завжди генеруємо правильний event_time і event_id
-    const currentUnixTime = Math.floor(Date.now() / 1000);
-    const generatedEventId = "event_" + Date.now();
-  
-    // Формуємо user_data правильно
-    const userData = {
-      client_user_agent: user.client_user_agent || req.headers['user-agent'],
-      client_ip_address: ip,
-      external_id: user.external_id || "anonymous_user",
-      fbc: user.fbc || null // fbc завжди лишаємо
-    };
-  
-    if (user.fbp) {
-      userData.fbp = user.fbp; // Додаємо fbp тільки якщо є
-    }
-  
+
     // Формуємо payload згідно з вимогами Facebook CAPI
     const payload = {
       data: [
         {
           event_name: event.event_name || "PageView",
-          event_time: currentUnixTime,
+          event_time: event.event_time || Math.floor(Date.now() / 1000),
           action_source: event.action_source || "website",
-          event_id: generatedEventId,
+          event_id: event.event_id || "event_" + Date.now(),
           event_source_url: event.event_source_url || req.headers.referer || "",
-          user_data: userData
+          user_data: {
+            client_user_agent: user.client_user_agent || req.headers['user-agent'],
+            fbp: user.fbp,
+            fbc: user.fbc,
+            external_id: user.external_id || "anonymous_user",
+            client_ip_address: ip
+          }
         }
       ]
     };
-  
+
+    // Логування payload
     console.log('📦 PageView payload для Facebook:\n', JSON.stringify(payload, null, 2));
-  
+
     try {
       const fbRes = await axios.post(
         `https://graph.facebook.com/v18.0/${PIXEL_ID}/events?access_token=${ACCESS_TOKEN}`,
         payload,
         { headers: { 'Content-Type': 'application/json' } }
       );
-  
-      console.log('✅ Facebook відповів PageView -> fbtrace_id:', fbRes.data.fbtrace_id || 'немає');
+
+      console.log('✅ Facebook відповів PageView ->');
+
       res.json({
         success: true,
         message: 'PageView успішно надіслано до Facebook',
