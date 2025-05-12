@@ -45,6 +45,18 @@ app.post('/api/pageView', async (req, res) => {
       req.socket?.remoteAddress ||
       null;
 
+    // Формуємо user_data
+    const userData = {
+      client_user_agent: user.client_user_agent || req.headers['user-agent'],
+      fbc: user.fbc || null,
+      external_id: user.external_id || "anonymous_user",
+      client_ip_address: ip
+    };
+
+    if (user.fbp) {
+      userData.fbp = user.fbp; // Додаємо fbp тільки якщо є
+    }
+
     // Формуємо payload згідно з вимогами Facebook CAPI
     const payload = {
       data: [
@@ -54,13 +66,7 @@ app.post('/api/pageView', async (req, res) => {
           action_source: event.action_source || "website",
           event_id: event.event_id || "event_" + Date.now(),
           event_source_url: event.event_source_url || req.headers.referer || "",
-          user_data: {
-            client_user_agent: user.client_user_agent || req.headers['user-agent'],
-            fbp: user.fbp,
-            fbc: user.fbc,
-            external_id: user.external_id || "anonymous_user",
-            client_ip_address: ip
-          }
+          user_data: userData
         }
       ]
     };
@@ -76,7 +82,6 @@ app.post('/api/pageView', async (req, res) => {
       );
 
       console.log('✅ Facebook відповів PageView ->');
-
       res.json({
         success: true,
         message: 'PageView успішно надіслано до Facebook',
@@ -90,7 +95,8 @@ app.post('/api/pageView', async (req, res) => {
         error: err.response?.data || err.message
       });
     }
-  });
+});
+
 
 
 // 🚀 Запуск сервера
