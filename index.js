@@ -32,6 +32,7 @@ app.post('/test-post', (req, res) => {
   });
 });
 
+
 // 🎯 Основний маршрут — надсилання події PageView у Facebook
 app.post('/api/pageView', async (req, res) => {
     const data = req.body;
@@ -44,8 +45,10 @@ app.post('/api/pageView', async (req, res) => {
       req.socket?.remoteAddress ||
       null;
   
-    // Завжди генеруємо правильний event_time і event_id
-    const currentUnixTime = Math.floor(Date.now() / 1000);
+    // Бере event_time від клієнта або створює новий
+    const eventTimeFromClient = event.event_time;
+    const currentUnixTime = eventTimeFromClient || Math.floor(Date.now() / 1000);
+  
     const generatedEventId = "event_" + Date.now();
   
     // Формуємо user_data правильно
@@ -53,14 +56,13 @@ app.post('/api/pageView', async (req, res) => {
       client_user_agent: user.client_user_agent || req.headers['user-agent'],
       client_ip_address: ip,
       external_id: user.external_id || "anonymous_user",
-      fbc: user.fbc || null // fbc завжди лишаємо
+      fbc: user.fbc || null
     };
   
     if (user.fbp) {
-      userData.fbp = user.fbp; // Додаємо fbp тільки якщо є
+      userData.fbp = user.fbp;
     }
   
-    // Формуємо payload згідно з вимогами Facebook CAPI
     const payload = {
       data: [
         {
@@ -97,8 +99,8 @@ app.post('/api/pageView', async (req, res) => {
         error: err.response?.data || err.message
       });
     }
-  });
-  
+});
+
 
 // 🚀 Запуск сервера
 app.listen(port, () => {
