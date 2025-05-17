@@ -113,12 +113,15 @@ app.post('/api/viewContent', async (req, res) => {
   
     const userData = {
       client_user_agent: user.client_user_agent || req.headers['user-agent'],
-      fbp: user.fbp || null,
       fbc: user.fbc || null,
       external_id: user.external_id || "anonymous_user",
       client_ip_address: ip
     };
-  
+
+    if (user.fbp) {
+        userData.fbp = user.fbp; // Додаємо fbp тільки якщо є
+      }
+
     const payload = {
       data: [
         {
@@ -135,7 +138,7 @@ app.post('/api/viewContent', async (req, res) => {
             content_category: custom.content_category || "",
             contents: custom.contents || [],
             value: custom.value || 0,
-            currency: custom.currency || "PLN"
+            currency: custom.currency || "UAH"
           }
         }
       ],
