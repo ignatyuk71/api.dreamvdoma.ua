@@ -97,6 +97,73 @@ app.post('/api/pageView', async (req, res) => {
     }
 });
 
+// 🛒 ViewContent маршрут
+app.post('/api/viewContent', async (req, res) => {
+    console.log("📥 Incoming POST request: ViewContent");
+  
+    const data = req.body;
+    const event = req.body?.data?.[0] || {};
+    const user = event.user_data || {};
+    const custom = event.custom_data || {};
+  
+    const ip =
+      req.headers['x-forwarded-for']?.split(',')[0] ||
+      req.socket?.remoteAddress ||
+      null;
+  
+    const userData = {
+      client_user_agent: user.client_user_agent || req.headers['user-agent'],
+      fbp: user.fbp || null,
+      fbc: user.fbc || null,
+      external_id: user.external_id || "anonymous_user",
+      client_ip_address: ip
+    };
+  
+    const payload = {
+      data: [
+        {
+          event_name: event.event_name || "ViewContent",
+          event_time: event.event_time || Math.floor(Date.now() / 1000),
+          action_source: event.action_source || "website",
+          event_id: event.event_id || "event_" + Date.now(),
+          event_source_url: event.event_source_url || req.headers.referer || "",
+          user_data: userData,
+          custom_data: {
+            content_ids: custom.content_ids || [],
+            content_name: custom.content_name || "",
+            content_type: custom.content_type || "product",
+            content_category: custom.content_category || "",
+            contents: custom.contents || [],
+            value: custom.value || 0,
+            currency: custom.currency || "PLN"
+          }
+        }
+      ],
+      test_event_code: req.body?.test_event_code || undefined
+    };
+  
+    console.log('📦 ViewContent payload для Facebook:\n', JSON.stringify(payload, null, 2));
+  
+    try {
+      /*const fbRes = await axios.post(
+        `https://graph.facebook.com/v18.0/${PIXEL_ID}/events?access_token=${ACCESS_TOKEN}`,
+        payload,
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+  */
+      console.log("✅ Facebook відповів ViewContent →");
+      //res.json({ success: true, fb: fbRes.data });
+    } catch (err) {
+      console.error("❌ Facebook error (ViewContent):", err.response?.data || err.message);
+      res.status(500).json({
+        success: false,
+        message: "Помилка надсилання ViewContent до Facebook",
+        error: err.response?.data || err.message
+      });
+    }
+  });
+  
+
 
 
 // 🚀 Запуск сервера
