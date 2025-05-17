@@ -145,14 +145,13 @@ app.post('/api/viewContent', async (req, res) => {
     console.log('📦 ViewContent payload для Facebook:\n', JSON.stringify(payload, null, 2));
   
     try {
-      /*const fbRes = await axios.post(
+      const fbRes = await axios.post(
         `https://graph.facebook.com/v18.0/${PIXEL_ID}/events?access_token=${ACCESS_TOKEN}`,
         payload,
         { headers: { 'Content-Type': 'application/json' } }
       );
-  */
       console.log("✅ Facebook відповів ViewContent →");
-      //res.json({ success: true, fb: fbRes.data });
+      res.json({ success: true, fb: fbRes.data });
     } catch (err) {
       console.error("❌ Facebook error (ViewContent):", err.response?.data || err.message);
       res.status(500).json({
