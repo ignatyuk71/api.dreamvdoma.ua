@@ -220,7 +220,7 @@ app.post('/api/addToCart', async (req, res) => {
         { headers: { 'Content-Type': 'application/json' } }
       );*/
   
-      console.log("\u2705 Facebook response (AddToCart)->");
+      console.log("Facebook response (AddToCart)->");
       //res.json({ success: true, fb: fbRes.data });
     } catch (err) {
       console.error("\u274C Facebook error (AddToCart):", err.response?.data || err.message);
