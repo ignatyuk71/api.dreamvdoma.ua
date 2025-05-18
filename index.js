@@ -285,7 +285,7 @@ app.post('/api/purchase', async (req, res) => {
         { headers: { 'Content-Type': 'application/json' } }
       );
   
-      console.log("\u2705 Facebook response (Purchase):->");
+      console.log("✅ Facebook відповів (Purchase):->");
       res.json({ success: true, fb: fbRes.data });
     } catch (err) {
       console.error("\u274C Facebook error (Purchase):", err.response?.data || err.message);
