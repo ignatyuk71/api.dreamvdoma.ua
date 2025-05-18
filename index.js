@@ -208,19 +208,18 @@ app.post('/api/addToCart', async (req, res) => {
           }
         }
       ],
-      test_event_code: data?.test_event_code || "TEST20618"
     };
   
     console.log('\u{1F4E6} AddToCart payload to send:', JSON.stringify(payload, null, 2));
   
     try {
-      /*const fbRes = await axios.post(
+      const fbRes = await axios.post(
         `https://graph.facebook.com/v18.0/${PIXEL_ID}/events?access_token=${ACCESS_TOKEN}`,
         payload,
         { headers: { 'Content-Type': 'application/json' } }
-      );*/
+      );
   
-      console.log("Facebook response (AddToCart)->");
+      console.log("✅ Facebook відповів (AddToCart)->");
       //res.json({ success: true, fb: fbRes.data });
     } catch (err) {
       console.error("\u274C Facebook error (AddToCart):", err.response?.data || err.message);
