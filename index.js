@@ -72,7 +72,7 @@ app.post('/api/pageView', async (req, res) => {
     };
 
     // Логування payload
-    console.log('📦 PageView payload для Facebook:\n', JSON.stringify(payload, null, 2));
+    //console.log('📦 PageView payload для Facebook:\n', JSON.stringify(payload, null, 2));
 
     try {
       const fbRes = await axios.post(
@@ -147,7 +147,7 @@ app.post('/api/viewContent', async (req, res) => {
 
     //console.log("🔍 custom.content_ids =", custom.content_ids);
     //console.log("🧪 typeof =", typeof custom.content_ids);
-    console.log('📦 ViewContent payload для Facebook:\n', JSON.stringify(payload, null, 2));
+    //console.log('📦 ViewContent payload для Facebook:\n', JSON.stringify(payload, null, 2));
   
     try {
       const fbRes = await axios.post(
@@ -170,7 +170,7 @@ app.post('/api/viewContent', async (req, res) => {
 
 // ✅ AddToCart маршрут на сервері
 app.post('/api/addToCart', async (req, res) => {
-    console.log("\u{1F4E5} Incoming POST request: AddToCart");
+    //console.log("\u{1F4E5} Incoming POST request: AddToCart");
   
     const data = req.body;
     const event = data?.data?.[0] || {};
@@ -210,7 +210,7 @@ app.post('/api/addToCart', async (req, res) => {
       ],
     };
   
-    console.log('\u{1F4E6} AddToCart payload to send:', JSON.stringify(payload, null, 2));
+    //console.log('\u{1F4E6} AddToCart payload to send:', JSON.stringify(payload, null, 2));
   
     try {
       const fbRes = await axios.post(
@@ -220,7 +220,7 @@ app.post('/api/addToCart', async (req, res) => {
       );
   
       console.log("✅ Facebook відповів (AddToCart)->");
-      //res.json({ success: true, fb: fbRes.data });
+      res.json({ success: true, fb: fbRes.data });
     } catch (err) {
       console.error("\u274C Facebook error (AddToCart):", err.response?.data || err.message);
       res.status(500).json({
