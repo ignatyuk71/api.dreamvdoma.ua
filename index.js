@@ -99,7 +99,7 @@ app.post('/api/pageView', async (req, res) => {
 
 // 🛒 ViewContent маршрут
 app.post('/api/viewContent', async (req, res) => {
-    console.log("📥 Incoming POST request: ViewContent");
+    //console.log("📥 Incoming POST request: ViewContent");
   
     const data = req.body;
     const event = req.body?.data?.[0] || {};
@@ -141,8 +141,7 @@ app.post('/api/viewContent', async (req, res) => {
             currency: custom.currency || "UAH"
           }
         }
-      ],
-      test_event_code: req.body?.test_event_code || undefined
+      ]
     };
 
     //console.log("🔍 custom.content_ids =", custom.content_ids);
@@ -234,7 +233,7 @@ app.post('/api/addToCart', async (req, res) => {
 
   // 🔥 Purchase подія — відправка на Facebook після оформлення замовлення
 app.post('/api/purchase', async (req, res) => {
-    console.log("\u{1F6D2} Incoming POST request: Purchase");
+    //console.log("\u{1F6D2} Incoming POST request: Purchase");
   
     const data = req.body;
     const event = data?.data?.[0] || {};
@@ -276,7 +275,7 @@ app.post('/api/purchase', async (req, res) => {
       ]
     };
   
-    console.log('\u{1F4E6}  payload to send:', JSON.stringify(payload, null, 2));
+   // console.log('\u{1F4E6}  payload to send:', JSON.stringify(payload, null, 2));
   
     try {
       const fbRes = await axios.post(
