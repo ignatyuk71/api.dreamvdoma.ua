@@ -234,7 +234,7 @@ app.post('/api/addToCart', async (req, res) => {
 
   // 🔥 Purchase подія — відправка на Facebook після оформлення замовлення
 app.post('/api/purchase', async (req, res) => {
-    console.log("\u{1F6D2} Incoming POST request: Purchase");
+    //console.log("\u{1F6D2} Incoming POST request: Purchase");
   
     const data = req.body;
     const event = data?.data?.[0] || {};
