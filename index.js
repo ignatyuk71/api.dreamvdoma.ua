@@ -203,7 +203,7 @@ app.post('/api/addToCart', async (req, res) => {
             content_category: custom.content_category || "",
             contents: custom.contents || [],
             value: custom.value || 0,
-            currency: custom.currency || "PLN"
+            currency: custom.currency || "UAH"
           }
         }
       ],
@@ -269,7 +269,7 @@ app.post('/api/purchase', async (req, res) => {
             content_type: custom.content_type || "product",
             contents: custom.contents || [],
             value: custom.value || 0,
-            currency: custom.currency || "PLN"
+            currency: custom.currency || "UAH"
           }
         }
       ]
