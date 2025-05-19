@@ -68,8 +68,7 @@ app.post('/api/pageView', async (req, res) => {
           event_source_url: event.event_source_url || req.headers.referer || "",
           user_data: userData
         }
-      ],
-  test_event_code: "TEST13640"
+      ]
     };
 
     // Логування payload
@@ -142,8 +141,7 @@ app.post('/api/viewContent', async (req, res) => {
             currency: custom.currency || "UAH"
           }
         }
-      ],
-  test_event_code: "TEST13640"
+      ]
     };
 
     //console.log("🔍 custom.content_ids =", custom.content_ids);
@@ -212,8 +210,7 @@ app.post('/api/addToCart', async (req, res) => {
             currency: custom.currency || "UAH"
           }
         }
-      ],
-  test_event_code: "TEST13640"
+      ]
     };
   
     try {
@@ -286,8 +283,7 @@ app.post('/api/addToCart', async (req, res) => {
             currency: custom.currency || "UAH"
           }
         }
-      ],
-  test_event_code: "TEST13640"
+      ]
     };
   
     try {
