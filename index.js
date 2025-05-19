@@ -68,7 +68,8 @@ app.post('/api/pageView', async (req, res) => {
           event_source_url: event.event_source_url || req.headers.referer || "",
           user_data: userData
         }
-      ]
+      ],
+  test_event_code: "TEST13640"
     };
 
     // Логування payload
@@ -141,7 +142,8 @@ app.post('/api/viewContent', async (req, res) => {
             currency: custom.currency || "UAH"
           }
         }
-      ]
+      ],
+  test_event_code: "TEST13640"
     };
 
     //console.log("🔍 custom.content_ids =", custom.content_ids);
@@ -169,8 +171,6 @@ app.post('/api/viewContent', async (req, res) => {
 
 // ✅ AddToCart маршрут на сервері
 app.post('/api/addToCart', async (req, res) => {
-    //console.log("\u{1F4E5} Incoming POST request: AddToCart");
-  
     const data = req.body;
     const event = data?.data?.[0] || {};
     const user = event.user_data || {};
@@ -181,6 +181,18 @@ app.post('/api/addToCart', async (req, res) => {
       req.socket?.remoteAddress ||
       null;
   
+    // ✅ Формуємо user_data
+    const userData = {
+      fbc: user.fbc,
+      external_id: user.external_id || "anonymous_user",
+      client_user_agent: user.client_user_agent || req.headers['user-agent'],
+      client_ip_address: ip
+    };
+  
+    if (user.fbp) {
+      userData.fbp = user.fbp; // ✅ тільки якщо є
+    }
+  
     const payload = {
       data: [
         {
@@ -189,13 +201,7 @@ app.post('/api/addToCart', async (req, res) => {
           event_id: event.event_id || "event_" + Date.now(),
           action_source: event.action_source || "website",
           event_source_url: event.event_source_url || req.headers.referer || "",
-          user_data: {
-            fbp: user.fbp,
-            fbc: user.fbc,
-            external_id: user.external_id || "anonymous_user",
-            client_user_agent: user.client_user_agent || req.headers['user-agent'],
-            client_ip_address: ip
-          },
+          user_data: userData,
           custom_data: {
             content_ids: custom.content_ids || [],
             content_name: custom.content_name || "",
@@ -207,9 +213,8 @@ app.post('/api/addToCart', async (req, res) => {
           }
         }
       ],
+  test_event_code: "TEST13640"
     };
-  
-    //console.log('\u{1F4E6} AddToCart payload to send:', JSON.stringify(payload, null, 2));
   
     try {
       const fbRes = await axios.post(
@@ -221,7 +226,7 @@ app.post('/api/addToCart', async (req, res) => {
       console.log("✅ Facebook відповів (AddToCart)->");
       res.json({ success: true, fb: fbRes.data });
     } catch (err) {
-      console.error("\u274C Facebook error (AddToCart):", err.response?.data || err.message);
+      console.error("❌ Facebook error (AddToCart):", err.response?.data || err.message);
       res.status(500).json({
         success: false,
         message: "Failed to send AddToCart to Facebook",
@@ -229,12 +234,11 @@ app.post('/api/addToCart', async (req, res) => {
       });
     }
   });
+  
 
 
   // 🔥 Purchase подія — відправка на Facebook після оформлення замовлення
-app.post('/api/purchase', async (req, res) => {
-    //console.log("\u{1F6D2} Incoming POST request: Purchase");
-  
+  app.post('/api/purchase', async (req, res) => {
     const data = req.body;
     const event = data?.data?.[0] || {};
     const user = event.user_data || {};
@@ -245,6 +249,26 @@ app.post('/api/purchase', async (req, res) => {
       req.socket?.remoteAddress ||
       null;
   
+    const userData = {
+      client_user_agent: user.client_user_agent || req.headers['user-agent'],
+      client_ip_address: ip,
+      fbc: user.fbc,
+      external_id: user.external_id || "anonymous_user",
+      ph: user.ph,
+      fn: user.fn,
+      ln: user.ln
+    };
+  
+    // Додаємо fbp, якщо є
+    if (user.fbp) {
+      userData.fbp = user.fbp;
+    }
+  
+    // Додаємо email, якщо є
+    if (user.em) {
+      userData.em = user.em;
+    }
+  
     const payload = {
       data: [
         {
@@ -253,17 +277,7 @@ app.post('/api/purchase', async (req, res) => {
           event_id: event.event_id || "event_" + Date.now(),
           action_source: event.action_source || "website",
           event_source_url: event.event_source_url || req.headers.referer || "",
-          user_data: {
-            fbp: user.fbp,
-            fbc: user.fbc,
-            external_id: user.external_id || "anonymous_user",
-            client_user_agent: user.client_user_agent || req.headers['user-agent'],
-            client_ip_address: ip,
-            em: user.em,
-            ph: user.ph,
-            fn: user.fn,
-            ln: user.ln
-          },
+          user_data: userData,
           custom_data: {
             content_ids: custom.content_ids || [],
             content_type: custom.content_type || "product",
@@ -272,10 +286,9 @@ app.post('/api/purchase', async (req, res) => {
             currency: custom.currency || "UAH"
           }
         }
-      ]
+      ],
+  test_event_code: "TEST13640"
     };
-  
-   // console.log('\u{1F4E6}  payload to send:', JSON.stringify(payload, null, 2));
   
     try {
       const fbRes = await axios.post(
@@ -287,7 +300,7 @@ app.post('/api/purchase', async (req, res) => {
       console.log("✅ Facebook відповів (Purchase):->");
       res.json({ success: true, fb: fbRes.data });
     } catch (err) {
-      console.error("\u274C Facebook error (Purchase):", err.response?.data || err.message);
+      console.error("❌ Facebook error (Purchase):", err.response?.data || err.message);
       res.status(500).json({
         success: false,
         message: "Failed to send Purchase to Facebook",
@@ -295,6 +308,7 @@ app.post('/api/purchase', async (req, res) => {
       });
     }
   });
+  
   
   
 
