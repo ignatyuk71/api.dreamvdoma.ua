@@ -38,13 +38,13 @@ app.post('/api/pageView', async (req, res) => {
     const data = req.body;
     const event = data?.data?.[0] || {};
     const user = event.user_data || {};
-
+  
     // Визначаємо IP користувача
     const ip =
       req.headers['x-forwarded-for']?.split(',')[0] ||
       req.socket?.remoteAddress ||
       null;
-
+  
     // Формуємо user_data
     const userData = {
       client_user_agent: user.client_user_agent || req.headers['user-agent'],
@@ -52,11 +52,11 @@ app.post('/api/pageView', async (req, res) => {
       external_id: user.external_id || "anonymous_user",
       client_ip_address: ip
     };
-
+  
     if (user.fbp) {
       userData.fbp = user.fbp; // Додаємо fbp тільки якщо є
     }
-
+  
     // Формуємо payload згідно з вимогами Facebook CAPI
     const payload = {
       data: [
@@ -68,19 +68,20 @@ app.post('/api/pageView', async (req, res) => {
           event_source_url: event.event_source_url || req.headers.referer || "",
           user_data: userData
         }
-      ]
+      ],
+      test_event_code: "TEST13640" // ✅ Додано код тестування
     };
-
+  
     // Логування payload
     console.log('📦 PageView payload для Facebook:\n', JSON.stringify(payload, null, 2));
-
+  
     try {
       const fbRes = await axios.post(
         `https://graph.facebook.com/v18.0/${PIXEL_ID}/events?access_token=${ACCESS_TOKEN}`,
         payload,
         { headers: { 'Content-Type': 'application/json' } }
       );
-
+  
       console.log('✅ Facebook відповів PageView ->');
       res.json({
         success: true,
@@ -95,7 +96,8 @@ app.post('/api/pageView', async (req, res) => {
         error: err.response?.data || err.message
       });
     }
-});
+  });
+  
 
 // 🛒 ViewContent маршрут
 app.post('/api/viewContent', async (req, res) => {
