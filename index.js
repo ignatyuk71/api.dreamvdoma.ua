@@ -72,7 +72,7 @@ app.post('/api/pageView', async (req, res) => {
     };
   
     // Логування payload
-    //console.log('📦 PageView payload для Facebook:\n', JSON.stringify(payload, null, 2));
+    console.log('📦 PageView payload для Facebook:\n', JSON.stringify(payload, null, 2));
   
     try {
       const fbRes = await axios.post(
