@@ -57,6 +57,10 @@ app.post('/api/pageView', async (req, res) => {
       userData.fbp = user.fbp; // Додаємо fbp тільки якщо є
     }
   
+    // Виводимо event_source_url
+console.log("🌐 event_source_url:", event.event_source_url || req.headers.referer || "");
+
+
     // Формуємо payload згідно з вимогами Facebook CAPI
     const payload = {
       data: [
