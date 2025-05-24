@@ -35,71 +35,72 @@ app.post('/test-post', (req, res) => {
 
 // 🎯 Основний маршрут — надсилання події PageView у Facebook
 app.post('/api/pageView', async (req, res) => {
-    const data = req.body;
-    const event = data?.data?.[0] || {};
-    const user = event.user_data || {};
-  
-    // Визначаємо IP користувача
-    const ip =
-      req.headers['x-forwarded-for']?.split(',')[0] ||
-      req.socket?.remoteAddress ||
-      null;
-  
-    // Формуємо user_data
-    const userData = {
-      client_user_agent: user.client_user_agent || req.headers['user-agent'],
-      fbc: user.fbc || null,
-      external_id: user.external_id || "anonymous_user",
-      client_ip_address: ip
-    };
-  
-    if (user.fbp) {
-      userData.fbp = user.fbp; // Додаємо fbp тільки якщо є
-    }
-  
-    // Виводимо event_source_url
-console.log("🌐 event_source_url:", event.event_source_url || req.headers.referer || "");
+  const data = req.body;
+  const event = data?.data?.[0] || {};
+  const user = event.user_data || {};
 
+  // Визначаємо IP користувача
+  const ip =
+    req.headers['x-forwarded-for']?.split(',')[0] ||
+    req.socket?.remoteAddress ||
+    null;
 
-    // Формуємо payload згідно з вимогами Facebook CAPI
-    const payload = {
-      data: [
-        {
-          event_name: event.event_name || "PageView",
-          event_time: event.event_time || Math.floor(Date.now() / 1000),
-          action_source: event.action_source || "website",
-          event_id: event.event_id || "event_" + Date.now(),
-          event_source_url: event.event_source_url || req.headers.referer || "",
-          user_data: userData
-        }
-      ]
-    };
-  
-    // Логування payload
-    //console.log('📦 PageView payload для Facebook:\n', JSON.stringify(payload, null, 2));
-  
-    try {
-      const fbRes = await axios.post(
-        `https://graph.facebook.com/v18.0/${PIXEL_ID}/events?access_token=${ACCESS_TOKEN}`,
-        payload,
-        { headers: { 'Content-Type': 'application/json' } }
-      );
-  
-      console.log('✅ Facebook відповів PageView ->');
-      res.json({
-        success: true,
-        message: 'PageView успішно надіслано до Facebook',
-        fb: fbRes.data
-      });
-    } catch (err) {
-      console.error('❌ Facebook error:', err.response?.data || err.message);
-      res.status(500).json({
-        success: false,
-        message: 'Помилка надсилання PageView до Facebook',
-        error: err.response?.data || err.message
-      });
-    }
-  });
+  // Формуємо user_data
+  const userData = {
+    client_user_agent: user.client_user_agent || req.headers['user-agent'],
+    fbc: user.fbc || null,
+    external_id: user.external_id || "anonymous_user",
+    client_ip_address: ip
+  };
+
+  if (user.fbp) {
+    userData.fbp = user.fbp;
+  }
+
+  // Обробляємо event_source_url та чистимо крапку з комою, якщо є
+  const rawEventUrl = event.event_source_url || req.headers.referer || '';
+  const cleanEventUrl = rawEventUrl.replace(/;$/, '');
+
+  // Виводимо в консоль перевірений URL
+  console.log("🌐 event_source_url:", cleanEventUrl);
+
+  // Формуємо payload згідно з вимогами Facebook CAPI
+  const payload = {
+    data: [
+      {
+        event_name: event.event_name || "PageView",
+        event_time: event.event_time || Math.floor(Date.now() / 1000),
+        action_source: event.action_source || "website",
+        event_id: event.event_id || "event_" + Date.now(),
+        event_source_url: cleanEventUrl,
+        user_data: userData
+      }
+    ]
+  };
+
+  try {
+    const fbRes = await axios.post(
+      `https://graph.facebook.com/v18.0/${PIXEL_ID}/events?access_token=${ACCESS_TOKEN}`,
+      payload,
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+
+    console.log('✅ Facebook відповів PageView ->');
+    res.json({
+      success: true,
+      message: 'PageView успішно надіслано до Facebook',
+      fb: fbRes.data
+    });
+  } catch (err) {
+    console.error('❌ Facebook error:', err.response?.data || err.message);
+    res.status(500).json({
+      success: false,
+      message: 'Помилка надсилання PageView до Facebook',
+      error: err.response?.data || err.message
+    });
+  }
+});
+
   
 
 // 🛒 ViewContent маршрут
