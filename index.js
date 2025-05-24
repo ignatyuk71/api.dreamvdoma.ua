@@ -147,7 +147,7 @@ app.post('/api/viewContent', async (req, res) => {
 
     //console.log("🔍 custom.content_ids =", custom.content_ids);
     //console.log("🧪 typeof =", typeof custom.content_ids);
-    //console.log('📦 ViewContent payload для Facebook:\n', JSON.stringify(payload, null, 2));
+    console.log('📦 ViewContent payload для Facebook:\n', JSON.stringify(payload, null, 2));
   
     try {
       const fbRes = await axios.post(
@@ -213,7 +213,7 @@ app.post('/api/addToCart', async (req, res) => {
         }
       ]
     };
-    console.log('📦 addtocar payload для Facebook:\n', JSON.stringify(payload, null, 2));
+    //console.log('📦 addtocar payload для Facebook:\n', JSON.stringify(payload, null, 2));
     try {
       const fbRes = await axios.post(
         `https://graph.facebook.com/v18.0/${PIXEL_ID}/events?access_token=${ACCESS_TOKEN}`,
