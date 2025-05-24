@@ -127,7 +127,9 @@ app.post('/api/viewContent', async (req, res) => {
     if (user.fbp) {
         userData.fbp = user.fbp; // Додаємо fbp тільки якщо є
       }
-
+      
+      console.log('📦 паке payload для Facebook:\n', JSON.stringify(payload, null, 2));
+  
     const payload = {
       data: [
         {
