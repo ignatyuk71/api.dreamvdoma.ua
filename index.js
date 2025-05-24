@@ -281,7 +281,7 @@ app.post('/api/addToCart', async (req, res) => {
             content_type: custom.content_type || "product",
             contents: custom.contents || [],
             value: custom.value || 0,
-            currency: custom.currency || "UAH"
+            currency: "UAH"
           }
         }
       ]
