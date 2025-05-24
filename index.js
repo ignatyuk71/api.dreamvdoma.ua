@@ -154,7 +154,7 @@ app.post('/api/viewContent', async (req, res) => {
 
     //console.log("🔍 custom.content_ids =", custom.content_ids);
     //console.log("🧪 typeof =", typeof custom.content_ids);
-    console.log('📦 ViewContent payload для Facebook:\n', JSON.stringify(payload, null, 2));
+    //console.log('📦 ViewContent payload для Facebook:\n', JSON.stringify(payload, null, 2));
   
     try {
       const fbRes = await axios.post(
