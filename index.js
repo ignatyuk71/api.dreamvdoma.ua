@@ -77,7 +77,8 @@ app.post('/api/pageView', async (req, res) => {
       }
     ]
   };
-
+  console.log('📦 паке payload для Facebook:\n', JSON.stringify(payload, null, 2));
+  
   try {
     const fbRes = await axios.post(
       `https://graph.facebook.com/v18.0/${PIXEL_ID}/events?access_token=${ACCESS_TOKEN}`,
