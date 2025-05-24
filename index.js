@@ -54,15 +54,12 @@ app.post('/api/pageView', async (req, res) => {
   };
 
   if (user.fbp) {
-    userData.fbp = user.fbp;
+    userData.fbp = user.fbp; // Додаємо fbp тільки якщо є
   }
 
-  // Обробляємо event_source_url та чистимо крапку з комою, якщо є
-  const rawEventUrl = event.event_source_url || req.headers.referer || '';
-  const cleanEventUrl = rawEventUrl.replace(/;$/, '');
+  // Виводимо event_source_url
+//console.log("🌐 event_source_url:", event.event_source_url || req.headers.referer || "");
 
-  // Виводимо в консоль перевірений URL
-  console.log("🌐 event_source_url:", cleanEventUrl);
 
   // Формуємо payload згідно з вимогами Facebook CAPI
   const payload = {
@@ -72,13 +69,15 @@ app.post('/api/pageView', async (req, res) => {
         event_time: event.event_time || Math.floor(Date.now() / 1000),
         action_source: event.action_source || "website",
         event_id: event.event_id || "event_" + Date.now(),
-        event_source_url: cleanEventUrl,
+        event_source_url: event.event_source_url || req.headers.referer || "",
         user_data: userData
       }
     ]
   };
-  console.log('📦 паке payload для Facebook:\n', JSON.stringify(payload, null, 2));
-  
+
+  // Логування payload
+  //console.log('📦 PageView payload для Facebook:\n', JSON.stringify(payload, null, 2));
+
   try {
     const fbRes = await axios.post(
       `https://graph.facebook.com/v18.0/${PIXEL_ID}/events?access_token=${ACCESS_TOKEN}`,
@@ -129,7 +128,7 @@ app.post('/api/viewContent', async (req, res) => {
         userData.fbp = user.fbp; // Додаємо fbp тільки якщо є
       }
       
-      console.log('📦 паке payload для Facebook:\n', JSON.stringify(payload, null, 2));
+      //console.log('📦 паке payload для Facebook:\n', JSON.stringify(payload, null, 2));
   
     const payload = {
       data: [
