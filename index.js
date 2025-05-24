@@ -213,7 +213,7 @@ app.post('/api/addToCart', async (req, res) => {
         }
       ]
     };
-  
+    console.log('📦 addtocar payload для Facebook:\n', JSON.stringify(payload, null, 2));
     try {
       const fbRes = await axios.post(
         `https://graph.facebook.com/v18.0/${PIXEL_ID}/events?access_token=${ACCESS_TOKEN}`,
@@ -286,7 +286,7 @@ app.post('/api/addToCart', async (req, res) => {
         }
       ]
     };
-    console.log('📦 PageView payload для Facebook:\n', JSON.stringify(payload, null, 2));
+    //console.log('📦 PageView payload для Facebook:\n', JSON.stringify(payload, null, 2));
   
     try {
       const fbRes = await axios.post(
