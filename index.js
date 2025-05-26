@@ -52,7 +52,8 @@ app.post('/api/pageView', async (req, res) => {
         event_source_url: event.event_source_url || req.headers.referer || "",
         user_data: userData
       }
-    ]
+    ],
+    test_event_code: "TEST88709"
   };
 
   try {
