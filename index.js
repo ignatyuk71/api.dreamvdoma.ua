@@ -88,6 +88,7 @@ app.post('/api/viewContent', async (req, res) => {
   if (user.fbc) userData.fbc = user.fbc;
 
   const payload = {
+    test_event_code: "TEST88709",
     data: [
       {
         event_name: event.event_name || "ViewContent",
@@ -141,6 +142,7 @@ app.post('/api/addToCart', async (req, res) => {
   if (user.fbc) userData.fbc = user.fbc;
 
   const payload = {
+    test_event_code: "TEST88709",
     data: [
       {
         event_name: event.event_name || "AddToCart",
@@ -198,6 +200,7 @@ app.post('/api/purchase', async (req, res) => {
   };
 
   const payload = {
+    test_event_code: "TEST88709",
     data: [
       {
         event_name: event.event_name || "Purchase",
