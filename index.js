@@ -43,6 +43,7 @@ app.post('/api/pageView', async (req, res) => {
   if (user.fbc) userData.fbc = user.fbc;
 
   const payload = {
+    test_event_code: "TEST88709",
     data: [
       {
         event_name: event.event_name || "PageView",
@@ -52,8 +53,7 @@ app.post('/api/pageView', async (req, res) => {
         event_source_url: event.event_source_url || req.headers.referer || "",
         user_data: userData
       }
-    ],
-    test_event_code: "TEST88709"
+    ]
   };
 
   try {
