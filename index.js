@@ -43,7 +43,7 @@ app.post('/api/pageView', async (req, res) => {
   if (user.fbc) userData.fbc = user.fbc;
 
   const payload = {
-    test_event_code: "TEST88709",
+    //test_event_code: "TEST88709",
     data: [
       {
         event_name: event.event_name || "PageView",
@@ -88,7 +88,7 @@ app.post('/api/viewContent', async (req, res) => {
   if (user.fbc) userData.fbc = user.fbc;
 
   const payload = {
-    test_event_code: "TEST88709",
+    //test_event_code: "TEST88709",
     data: [
       {
         event_name: event.event_name || "ViewContent",
@@ -142,7 +142,7 @@ app.post('/api/addToCart', async (req, res) => {
   if (user.fbc) userData.fbc = user.fbc;
 
   const payload = {
-    test_event_code: "TEST88709",
+    //test_event_code: "TEST88709",
     data: [
       {
         event_name: event.event_name || "AddToCart",
@@ -200,7 +200,7 @@ app.post('/api/purchase', async (req, res) => {
   };
 
   const payload = {
-    test_event_code: "TEST88709",
+    //test_event_code: "TEST88709",
     data: [
       {
         event_name: event.event_name || "Purchase",
@@ -219,7 +219,7 @@ app.post('/api/purchase', async (req, res) => {
       }
     ]
   };
-
+  console.log("➡️ Payload to Facebook (Purchase):", JSON.stringify(payload, null, 2));
   try {
     const fbRes = await axios.post(
       `https://graph.facebook.com/v18.0/${PIXEL_ID}/events?access_token=${ACCESS_TOKEN}`,
